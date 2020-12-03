@@ -1,0 +1,74 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: ab3452df6719b7f33106129565052a012e284adeddb42b06d89ee79dcad00b42
+
+name:           aoc2020hask
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/Github username here/aoc2020hask#readme>
+homepage:       https://github.com/Github username here/aoc2020hask#readme
+bug-reports:    https://github.com/Github username here/aoc2020hask/issues
+author:         Author name here
+maintainer:     Author email here
+copyright:      2019 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/Github username here/aoc2020hask
+
+library
+  exposed-modules:
+      Lib
+      Prob1
+      Prob2
+      Util
+  other-modules:
+      Paths_aoc2020hask
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , regex-base
+    , regex-tdfa
+    , unordered-containers ==0.2.13.0
+  default-language: Haskell2010
+
+executable aoc2020hask-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_aoc2020hask
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aoc2020hask
+    , base >=4.7 && <5
+    , regex-base
+    , regex-tdfa
+    , unordered-containers ==0.2.13.0
+  default-language: Haskell2010
+
+test-suite aoc2020hask-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_aoc2020hask
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aoc2020hask
+    , base >=4.7 && <5
+    , regex-base
+    , regex-tdfa
+    , unordered-containers ==0.2.13.0
+  default-language: Haskell2010
