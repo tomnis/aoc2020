@@ -24,6 +24,7 @@ dependencies:
 - unordered-containers == 0.2.13.0
 - regex-base
 - regex-tdfa
+- MissingH
 
 library:
   source-dirs: src
