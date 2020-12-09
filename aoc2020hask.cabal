@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ab3452df6719b7f33106129565052a012e284adeddb42b06d89ee79dcad00b42
+-- hash: 93130283837278051269e7935cdc303bc17e1869eedbcb5d59e58434a7cf18b5
 
 name:           aoc2020hask
 version:        0.1.0.0
@@ -30,6 +30,7 @@ library
       Lib
       Prob1
       Prob2
+      Prob3
       Util
   other-modules:
       Paths_aoc2020hask
