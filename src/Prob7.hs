@@ -1,10 +1,12 @@
 module Prob7 (prob7) where
 
+import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.String.Utils
 import System.IO
 import Text.Regex.TDFA
+import Util
 
 -- Map[Color, Seq[(Int, Color)]]
 readData :: String -> IO (Map String [(Int, String)])
@@ -47,11 +49,36 @@ parseContainedBag s =
     in (amt, color)
 
 
+containsShinyGoldBag :: String -> Map String [(Int, String)] -> Bool
+containsShinyGoldBag start rules =
+    let children = Map.findWithDefault [] start rules :: [(Int, String)]
+        childBagColors = map (\(q, c) -> c) children :: [String]
+    in elem "shiny gold" childBagColors || any p childBagColors
+        where p color = containsShinyGoldBag color rules
 
 
 -- how many colors can, eventually, contain at least one shiny gold bag?
 part1 :: Map String [(Int, String)] -> Int
-part1 rules = -1
+part1 rules = count p (Map.keys rules)
+    where p x = containsShinyGoldBag x rules
+
+
+
+numBagsInside :: String -> Map String [(Int, String)] -> Int
+numBagsInside color rules =
+    let children = Map.findWithDefault [] color rules :: [(Int, String)]
+        childBagColors = map (\(q, c) -> c) children :: [String]
+        childBagNums = map (\(q,c) -> q) children :: [Int]
+        childChildBagNums = map (\c -> numBagsInside c rules) childBagColors :: [Int]
+        zipped = zip childBagNums childChildBagNums :: [(Int, Int)]
+        mult = map (\(a, b) -> a * b) zipped :: [Int]
+    in sum (childBagNums ++ mult)
+
+
+
+-- how many individual bags are required inside single shiny gold bag?
+part2 :: Map String [(Int, String)] -> Int
+part2 rules = numBagsInside "shiny gold" rules
 
 
 prob7 :: IO ()
@@ -73,3 +100,6 @@ prob7 = do
     print ("num rules: " ++ (show (length rules)))
     let p1 = part1 rules
     print ("part1 result: " ++ (show p1))
+    -- 48161 too high
+    let p2 = part2 rules
+    print ("part2 result: " ++ (show p2))
