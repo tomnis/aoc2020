@@ -1,4 +1,4 @@
-module Util (count, xor, takeRight, dropRight, quicksort) where
+module Util (count, xor, takeRight, dropRight, quicksort, readSignedInt) where
 
 count :: (a -> Bool) -> [a] -> Int
 count p xs = length (filter p xs)
@@ -18,3 +18,8 @@ quicksort (x:xs) =
     let smallerSorted = quicksort [a | a <- xs, a <= x]  
         biggerSorted = quicksort [a | a <- xs, a > x]  
     in  smallerSorted ++ [x] ++ biggerSorted  
+    
+    
+readSignedInt :: String -> Int
+readSignedInt ('+':num) = read num :: Int
+readSignedInt num = read num :: Int
