@@ -2,7 +2,7 @@ module Main where
 
 import System.IO
 import Lib
-import Prob8
+import Prob9
 
 main :: IO ()
-main = prob8
+main = prob9

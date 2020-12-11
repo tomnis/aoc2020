@@ -36,6 +36,7 @@ library
       Prob6
       Prob7
       Prob8
+      Prob9
       Util
   other-modules:
       Paths_aoc2020hask
