@@ -5,6 +5,7 @@ import Data.Maybe
 import Data.String.Utils
 import qualified Data.HashSet as HashSet
 import System.IO
+import Util
 
 
 
@@ -27,12 +28,8 @@ sumToTarget nums target =
             where p x = HashSet.member (target - x) numSet
     in (length containedNums) > 0
 
-slidingWindows :: Int -> [a] -> [[a]]
-slidingWindows n xs = map (take n) (tails xs)
 
-unbox :: a -> Maybe a -> a
-unbox _ (Just m) = m
-unbox dflt Nothing = dflt
+
 
 
 -- first int that is not a sum of any of the previous 25 nums

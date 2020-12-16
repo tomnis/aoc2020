@@ -70,9 +70,9 @@ modifyProgram program idx =
         newLine = swap line
     in (take idx program) ++ (newLine : (drop (idx + 1) program))
 
-unbox :: (Maybe (Maybe Int)) -> Int
-unbox (Just (Just x)) = x
-unbox _ = -1
+unboxf :: (Maybe (Maybe Int)) -> Int
+unboxf (Just (Just x)) = x
+unboxf _ = -1
 
 -- Fix the program so that it terminates normally by changing exactly one jmp (to nop) or nop (to jmp).
 -- What is the value of the accumulator after the program terminates?
@@ -84,7 +84,7 @@ part2 program =
         newPrograms = map (\idx -> modifyProgram program idx) indices :: [[(Int, String, Int)]]
     -- then run each modified program to see which terminates normally
         fixedProgramResult = find (\x -> isJust x) (map run newPrograms)
-    in unbox fixedProgramResult
+    in unboxf fixedProgramResult
 
 prob8 :: IO ()
 prob8 = do
