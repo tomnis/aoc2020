@@ -6,6 +6,8 @@ import System.IO
 import Util
 
 type Grid = [String]
+-- row, col
+type Cell = (Int, Int)
 
 -- floor '.'
 -- empty 'L'
@@ -24,18 +26,18 @@ readData fileName = do
 
 
 -- grid, row, col -> count
-numOccupiedNeighbors :: Grid -> Int -> Int -> Int
-numOccupiedNeighbors grid row col =
+numOccupiedNeighbors :: Grid -> Cell -> Int
+numOccupiedNeighbors grid (row, col)  =
     let neighbors = [(row - 1, col - 1), (row - 1, col), (row - 1, col + 1),
                      (row, col - 1),                     (row, col + 1),
-                     (row + 1, col - 1), (row + 1, col), (row + 1, col + 1)]
-    in count (\(r,c) -> isOccupied grid r c) neighbors
+                     (row + 1, col - 1), (row + 1, col), (row + 1, col + 1)] :: [Cell]
+    in count (isOccupied grid) neighbors
 
-isOccupied :: Grid -> Int -> Int -> Bool
-isOccupied grid row col = (lookupSeat grid row col) == (Just '#')
+isOccupied :: Grid -> Cell -> Bool
+isOccupied grid cell = (lookupSeat grid cell) == (Just '#')
 
-lookupSeat :: Grid -> Int -> Int -> Maybe Char
-lookupSeat grid row col = do
+lookupSeat :: Grid -> Cell -> Maybe Char
+lookupSeat grid (row, col) = do
     maybeRow <- safeAccess grid row :: Maybe String
     safeAccess maybeRow col :: Maybe Char
 
@@ -44,23 +46,23 @@ numOccupiedSeats grid = sum (map (count (== '#')) grid)
 
 
 
-stepCell :: Grid -> Int -> Int -> Char -> Char
+stepCell :: Grid -> Cell -> Char -> Char
 -- If a seat is empty (L) and there are no occupied seats adjacent to it, the seat becomes occupied
-stepCell grid row col 'L'
-    | numOccupiedNeighbors grid row col == 0 = '#'
+stepCell grid cell 'L'
+    | numOccupiedNeighbors grid cell == 0 = '#'
     | otherwise = 'L'
 -- If a seat is occupied (#) and four or more seats adjacent to it are also occupied, the seat becomes empty.
-stepCell grid row col '#'
-    | numOccupiedNeighbors grid row col >= 4 = 'L'
+stepCell grid cell '#'
+    | numOccupiedNeighbors grid cell >= 4 = 'L'
     | otherwise = '#'
-stepCell grid row col '.' = '.'
-stepCell grid row col other = error ("wrong cell: " ++ (show other))
+stepCell _ _ '.' = '.'
+stepCell _ _ other = error ("wrong cell: " ++ (show other))
 
 
 stepRow :: Grid -> (Int, String) -> String
 stepRow grid (idx, row) =
     let pairs = zip [0..] row :: [(Int, Char)]
-    in map (\(col, cell) -> stepCell grid idx col cell) pairs
+    in map (\(col, char) -> stepCell grid (idx, col) char) pairs
 
 -- otherwise state does not change
 step :: Grid -> Grid
@@ -76,57 +78,59 @@ part1 oldGrid =
        else part1 newGrid
 
 
------------
+-------------------------------------------
+-------------------------------------------
+-------------------------------------------
 
 -- scan starting in the specified direction
-checkFirstSeatDirection :: Grid -> (Int, Int) -> (Int, Int) -> Maybe Char
-checkFirstSeatDirection grid start diff =
-    let (newRow, newCol) = add2 start diff
-        maybeCh = lookupSeat grid newRow newCol
-    in checkSeat grid (newRow, newCol) diff maybeCh
+scanUntilSeat :: Grid -> Cell -> (Int, Int) -> Maybe Char
+scanUntilSeat grid start delta =
+    let newCell = add2 start delta
+        maybeCh = lookupSeat grid newCell
+    in checkSeat grid newCell delta maybeCh
 
-checkSeat :: Grid -> (Int, Int) -> (Int, Int) -> Maybe Char -> Maybe Char
-checkSeat _ _ _ (Just 'L') = (Just 'L')
-checkSeat _ _ _ (Just '#') = (Just '#')
+checkSeat :: Grid -> Cell -> (Int, Int) -> Maybe Char -> Maybe Char
+checkSeat _ _ _ (Just 'L') = Just 'L'
+checkSeat _ _ _ (Just '#') = Just '#'
+-- floor -- keep scanning
+checkSeat grid cur delta (Just '.') = scanUntilSeat grid cur delta
 -- went past the edge
 checkSeat _ _ _ Nothing = Nothing
--- floor -- keep scanning
-checkSeat grid (row, col) diff (Just '.') = checkFirstSeatDirection grid (row, col) diff
 checkSeat _ _ _ ch = error ("wrong cell: " ++ (show ch))
 
 
 --  the first seat they can see in each of those eight directions
-numOccupiedNeighbors2 :: Grid -> Int -> Int -> Int
-numOccupiedNeighbors2 grid row col =
-    let directions = [(row - 1, col - 1), (row - 1, col), (row - 1, col + 1),
-                     (row, col - 1),                     (row, col + 1),
-                     (row + 1, col - 1), (row + 1, col), (row + 1, col + 1)]
-    in count (\(rDiff,cDiff) -> (checkFirstSeatDirection grid (row, col) (rDiff, cDiff)) == (Just '#')) directions
+numOccupiedNeighbors2 :: Grid -> Cell -> Int
+numOccupiedNeighbors2 grid (row, col) =
+    let directions = [(-1, -1), (-1, 0), (-1, 1),
+                      (0, -1),           (0, 1),
+                      (1, -1), (1, 0), (1, 1)]
+    in count (\delta -> scanUntilSeat grid (row, col) delta == Just '#') directions
 
 
-stepCell2 :: Grid -> Int -> Int -> Char -> Char
+stepCell2 :: Grid -> Cell -> Char -> Char
 -- If a seat is empty (L) and there are no occupied seats adjacent to it, the seat becomes occupied
-stepCell2 grid row col 'L'
-    | numOccupiedNeighbors2 grid row col == 0 = '#'
+stepCell2 grid cell 'L'
+    | numOccupiedNeighbors2 grid cell == 0 = '#'
     | otherwise = 'L'
 -- If a seat is occupied (#) and four or more seats adjacent to it are also occupied, the seat becomes empty.
-stepCell2 grid row col '#'
-    | numOccupiedNeighbors2 grid row col >= 5 = 'L'
+stepCell2 grid cell '#'
+    | numOccupiedNeighbors2 grid cell >= 5 = 'L'
     | otherwise = '#'
-stepCell2 grid row col '.' = '.'
-stepCell2 grid row col other = error ("wrong cell: " ++ (show other))
+stepCell2 _ _ '.' = '.'
+stepCell2 _ _ other = error ("wrong cell: " ++ (show other))
 
 
 stepRow2 :: Grid -> (Int, String) -> String
 stepRow2 grid (idx, row) =
     let pairs = zip [0..] row :: [(Int, Char)]
-    in map (\(col, cell) -> stepCell2 grid idx col cell) pairs
+    in map (\(col, cell) -> stepCell2 grid (idx, col) cell) pairs
 
 
 step2 :: Grid -> Grid
 step2 grid =
     let pairs = zip [0..] grid :: [(Int, String)]
-    in map (\(rowIdx, row) -> stepRow2 grid (rowIdx, row)) pairs
+    in map (stepRow2 grid) pairs
 
 part2 :: Grid -> Int
 part2 oldGrid =
