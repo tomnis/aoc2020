@@ -43,3 +43,6 @@ unbox dflt Nothing = dflt
 
 add2 :: (Int, Int) -> (Int, Int) -> (Int, Int)
 add2 (a,b) (c,d) = (a + c, b + d)
+
+
+egcd :: Int -> Int -> (Int, Int, Int)
